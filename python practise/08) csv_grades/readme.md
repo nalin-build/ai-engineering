@@ -1,0 +1,8 @@
+CSV-based grade tracker with persistence - asks for a filename, loads existing grades if the file exists (starts empty if it doesn't), then lets you add new students and edit existing ones in one unified loop, saving everyone back to the same file at the end.
+
+Mistakes:
+- First tried csv.reader on a row that only had 2 columns using row[2] instead of row[1] - IndexError, simple off-by-one on the index.
+- Nested a while True inside another while True to validate the score (checking for valid number AND checking <=100) - the inner break only exited the inner loop, so the outer loop kept looping and asked for the score again even after a valid one was already accepted. Simplified to one loop with both checks inside it.
+- Bigger design flaw I caught myself: originally split "add a new student" and "edit an existing student" into two completely separate code paths (one inside try, one inside except FileNotFoundError). This meant if the file existed but was empty, there was no way to add anyone at all - the try block only supported editing. Fixed by separating "load initial data" (try/except) from "the actual interactive loop" (one shared while loop handling both add and edit), so both work regardless of whether the file existed beforehand.
+
+Topics: import csv, csv.reader, csv.writer, newline="" quirk on Windows, reusing the file-persistence pattern (load → merge → overwrite with "w") on a new file format, continue vs falling through an if/else.
